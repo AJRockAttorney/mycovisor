@@ -2,21 +2,26 @@
 #include "lpuart.h"
 #include <stdio.h>
 
-static void uart_write(const char *s) {
-    while (*s) {
-        while (!LL_LPUART_IsActiveFlag_TXE(LPUART1)) { }  // wait for TX empty
-        LL_LPUART_TransmitData8(LPUART1, (uint8_t)*s++);
-    }
-}
+#include "mpack.h"
+#include "rpc.h"
 
-static void echo_handler(const uint8_t *data, size_t len) {
-    lpuart_write(data, len);
+//TEMP -- soak-test support method
+volatile uint32_t rpc_test_notif_count = 0;
+
+static void handle_getcount(mpack_node_t params, mpack_writer_t *w) {
+    rpc_test_notif_count++;
+    (void)params;
+    mpack_write_nil(w);
+    mpack_write_uint(w, rpc_test_notif_count);
 }
 
 void app_main(void) {
     lpuart_init();
-    lpuart_set_rx_handler(echo_handler);
+    rpc_init();
+    if (rpc_register("getcount", handle_getcount) != RPC_REG_OK) rpc_fault();
+    LL_GPIO_SetOutputPin(GPIOH, LL_GPIO_PIN_10);//active-low
     while (1) {
+        rpc_poll();
 
     }
 }

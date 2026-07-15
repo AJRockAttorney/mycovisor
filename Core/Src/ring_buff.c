@@ -45,6 +45,34 @@ bool rb_write(ring_buf_t *rb, const uint8_t *data, const size_t len) {
      rb->head = (head+len)%size;
      return true;
 }
+size_t rb_read(ring_buf_t *rb, uint8_t *dst, size_t len) {
+     size_t head = rb -> head;
+     size_t tail = rb -> tail;
+     size_t size = rb -> size;
+
+     size_t available;
+     if (head >=tail) {
+          available = head - tail;
+     }
+     else {
+         available = size - (tail - head);
+     }
+
+     size_t to_copy = (len <available) ? len : available;
+     if (to_copy == 0) {
+          return 0;
+     }
+     size_t to_end = size - tail;
+     if (to_copy <= to_end) {
+          memcpy(dst, &rb->buf[tail], to_copy);
+     }
+     else {
+          memcpy(dst, &rb->buf[tail], to_end);
+          memcpy(dst + to_end, &rb->buf[0], to_copy-to_end);
+     }
+     rb->tail = (tail + to_copy) % size;
+     return to_copy;
+}
 
 rb_block_t rb_get_linear_block(ring_buf_t *rb) {
      size_t head = rb->head;

@@ -233,6 +233,9 @@ void GPDMA1_Channel3_IRQHandler(void)
     LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_3);
     lpuart_rx_check();
   }
+  if (LL_DMA_IsEnabledIT_DTE(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3)) {
+    lpuart_rx_dma_error_check();
+  }
 
   /* USER CODE END GPDMA1_Channel3_IRQn 1 */
 }
@@ -250,6 +253,7 @@ void LPUART1_IRQHandler(void)
     LL_LPUART_ClearFlag_IDLE(LPUART1);
     lpuart_rx_check();
   }
+  lpuart_rx_error_check();
   /* USER CODE END LPUART1_IRQn 1 */
 }
 

@@ -38,7 +38,11 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Inc/lpuart.h
         Core/Src/lpuart.c
         Core/Src/ring_buff.c
-        Core/Inc/ring_buff.h)
+        Core/Inc/ring_buff.h
+        Core/Inc/mpack-config.h
+        Core/Src/mpack.c
+        Core/Src/rpc.c
+        Core/Inc/rpc.h)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
@@ -72,3 +76,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE MPACK_HAS_CONFIG=1)

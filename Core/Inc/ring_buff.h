@@ -24,4 +24,5 @@ rb_block_t rb_get_linear_block(ring_buf_t *rb);
 void rb_skip(ring_buf_t *rb, size_t len);
 void rb_init(ring_buf_t *rb, uint8_t *buf, size_t size);
 bool rb_write(ring_buf_t *rb, const uint8_t *data, size_t len);
+size_t rb_read(ring_buf_t *rb, uint8_t *dst, size_t len);
 #endif //UNOQBLINKY_RING_BUFF_H

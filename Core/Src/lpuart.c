@@ -2,16 +2,53 @@
 #include "main.h"
 #include "ring_buff.h"
 
-#define LPUART_RX_BUF_LEN 64
+
+#define LPUART_RX_BUF_LEN 256
 #define LPUART_TX_BUF_LEN 256
+#define LPUART_RX_STAGING_LEN 512
 static uint8_t lpuart_rx_dma_buf[LPUART_RX_BUF_LEN];
+static uint8_t tx_rb_buf[LPUART_TX_BUF_LEN];
+static uint8_t rx_staging_buf[LPUART_RX_STAGING_LEN];
 static LL_DMA_LinkNodeTypeDef lpuart_rx_dma_node;
 static lpuart_rx_handler_t rx_handler;
-static uint8_t tx_rb_buf[LPUART_TX_BUF_LEN];
+
+
 static ring_buf_t tx_rb;
+static ring_buf_t rx_staging;
+
+volatile uint32_t rx_overflow;
+
 static volatile size_t tx_dma_len;
 
 static bool lpuart_start_tx(void);
+static void rx_stage_handler(const uint8_t *data, size_t len);
+
+volatile uint32_t rx_ore_count;   /* overrun: peripheral RDR overwritten before DMA read it */
+volatile uint32_t rx_fe_count;    /* framing error: stop bit not where expected (baud/noise) */
+volatile uint32_t rx_ne_count;    /* noise error: line noise detected during a bit sample */
+volatile uint32_t rx_dma_err_count; /* GPDMA1 channel 3 data-transfer error */
+
+void lpuart_rx_error_check(void) {
+    if (LL_LPUART_IsActiveFlag_ORE(LPUART1)) {
+        LL_LPUART_ClearFlag_ORE(LPUART1);
+        rx_ore_count++;
+    }
+    if (LL_LPUART_IsActiveFlag_FE(LPUART1)) {
+        LL_LPUART_ClearFlag_FE(LPUART1);
+        rx_fe_count++;
+    }
+    if (LL_LPUART_IsActiveFlag_NE(LPUART1)) {
+        LL_LPUART_ClearFlag_NE(LPUART1);
+        rx_ne_count++;
+    }
+}
+
+void lpuart_rx_dma_error_check(void) {
+    if (LL_DMA_IsActiveFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3)) {
+        LL_DMA_ClearFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3);
+        rx_dma_err_count++;
+    }
+}
 
 void lpuart_set_rx_handler(lpuart_rx_handler_t handler) {
     rx_handler = handler;
@@ -86,16 +123,35 @@ void lpuart_rx_init(void) {
 
     LL_DMA_EnableIT_HT(GPDMA1,  LL_DMA_CHANNEL_3);
     LL_DMA_EnableIT_TC(GPDMA1,  LL_DMA_CHANNEL_3);
+    LL_DMA_EnableIT_DTE(GPDMA1, LL_DMA_CHANNEL_3);
 
-    NVIC_SetPriority(GPDMA1_Channel3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 5, 0));
+    NVIC_SetPriority(GPDMA1_Channel3_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
     NVIC_EnableIRQ(GPDMA1_Channel3_IRQn);
 
     LL_LPUART_EnableIT_IDLE(LPUART1);
+    /* CR3.EIE: without this, ORE/FE/NE flags still get set in ISR but never
+       raise an interrupt, so LPUART1_IRQHandler would only notice them
+       incidentally on the next IDLE -- and ORE left uncleared can stall
+       further reception in the meantime. */
+    LL_LPUART_EnableIT_ERROR(LPUART1);
 
     LL_LPUART_EnableDMAReq_RX(LPUART1);
     LL_DMA_EnableChannel(GPDMA1, LL_DMA_CHANNEL_3);
+
+    rb_init(&rx_staging, rx_staging_buf, sizeof(rx_staging_buf));
 }
 
+/* Bumped once per staging event (ISR context only), so callers driving a
+   parser off rx_staging can tell whether anything new arrived since they
+   last checked, instead of re-polling blind at main-loop speed. */
+volatile uint32_t rx_staged_events;
+
+static void rx_stage_handler(const uint8_t *data, size_t len) {
+    if (!rb_write(&rx_staging, data, len)) {
+        rx_overflow++;
+    }
+    rx_staged_events++;
+}
 void lpuart_tx_raw(const uint8_t *data, size_t len) {
     for (size_t i = 0; i < len; i++) {
         while (!LL_LPUART_IsActiveFlag_TXE(LPUART1)) { }   // wait for room
@@ -142,7 +198,6 @@ void lpuart_tx_init(void) {
 
     rb_init(&tx_rb, tx_rb_buf, sizeof(tx_rb_buf));
 }
-
 static bool lpuart_start_tx(void) {
     bool started = false;
     uint32_t primask = __get_PRIMASK();
@@ -165,8 +220,11 @@ static bool lpuart_start_tx(void) {
 }
 
 bool lpuart_write(const uint8_t *data, size_t len) {
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
     bool ok = rb_write(&tx_rb, data, len);
     lpuart_start_tx();
+    __set_PRIMASK(primask);
     return ok;
 }
 
@@ -181,4 +239,9 @@ void lpuart_init(void) {
 
     lpuart_rx_init();
     lpuart_tx_init();
+    lpuart_set_rx_handler(rx_stage_handler);
+}
+
+size_t lpuart_read(uint8_t *dst, size_t max) {
+    return rb_read(&rx_staging, dst, max);
 }
