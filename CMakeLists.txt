@@ -42,7 +42,9 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Inc/mpack-config.h
         Core/Src/mpack.c
         Core/Src/rpc.c
-        Core/Inc/rpc.h)
+        Core/Inc/rpc.h
+        Core/Src/fault.c
+        Core/Inc/fault.h)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)

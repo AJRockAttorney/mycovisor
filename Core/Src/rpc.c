@@ -322,13 +322,6 @@ static void dispatch(mpack_node_t root) {
 
     }
 }
-void rpc_fault(void) {
-    //LL_GPIO_ResetOutputPin(GPIOH, LL_GPIO_PIN_10);  //Turn on Red on LED3
-    __disable_irq();                                        //Freeze interupts
-    __BKPT(0);
-    for (;;){}                                              //Hang indefinitly
-}
-
 /*Only retry mpack parson on new data arriving*/
 static uint32_t last_staged_seen = 0;
 

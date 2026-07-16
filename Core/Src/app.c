@@ -1,9 +1,17 @@
 #include "main.h"
 #include "lpuart.h"
+#include "fault.h"
 #include <stdio.h>
 
 #include "mpack.h"
 #include "rpc.h"
+
+/* rpc.c only calls rpc_fault() -- it never defines it (see rpc.h), so the
+   generic transport layer stays free of any board-specific reset/logging
+   policy. This is that policy, and it belongs here, not in rpc.c. */
+void rpc_fault(void) {
+    fault_record_and_reset(FAULT_REASON_RPC_FAULT);
+}
 
 #ifdef DEBUG
 /* TEMP -- soak-test support method. Only registered in Debug builds so it
@@ -27,6 +35,5 @@ void app_main(void) {
     LL_GPIO_SetOutputPin(GPIOH, LL_GPIO_PIN_10);//active-low
     while (1) {
         rpc_poll();
-
     }
 }

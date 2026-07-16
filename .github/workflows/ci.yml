@@ -51,4 +51,5 @@ jobs:
           cppcheck --enable=warning,performance,portability --error-exitcode=1 \
             --inline-suppr --std=c11 -ICore/Inc -DMPACK_HAS_CONFIG=1 \
             --suppress=missingIncludeSystem \
-            Core/Src/app.c Core/Src/lpuart.c Core/Src/ring_buff.c Core/Src/rpc.c
+            Core/Src/app.c Core/Src/lpuart.c Core/Src/ring_buff.c Core/Src/rpc.c \
+            Core/Src/fault.c

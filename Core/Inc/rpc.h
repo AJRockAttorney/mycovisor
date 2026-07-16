@@ -19,7 +19,18 @@ typedef enum {
 
 void rpc_init(void);
 void rpc_poll(void);
+
+/* Called on a static/impossible protocol condition (e.g. the fixed method
+   table is full, or the mpack tree runs out of memory) that this generic
+   transport layer has no way to recover from on its own. rpc.c only calls
+   this -- it does not define it, and knows nothing about how the fault is
+   handled (log-and-reset, halt-and-blink, whatever fits the target). The
+   application/platform layer must supply an implementation; this keeps
+   rpc.c/rpc.h free of any MCU- or board-specific dependency, so they can
+   be dropped onto a different Cortex-M target's CubeMX-generated LL
+   firmware without modification. */
 void rpc_fault(void);
+
 uint32_t rpc_call(const char *method, rpc_params_fn write_params, void *params_ctx,
                   rpc_result_fn on_result, void *result_ctx);
 void rpc_notify(const char *method, rpc_params_fn write_params, void *params_ctx);
