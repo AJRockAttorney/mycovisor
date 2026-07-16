@@ -9,11 +9,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define RPC_ERR_ROUTE_ALREADY_EXISTS 5
 #define RPC_MAX_PENDING              10
 #define RPC_TX_BUF                   128
+#define RPC_NOTIFY_SCRATCH_BUF       64    /* discard buffer for a notification handler's
+                                               would-be response -- never sent, just needs
+                                               to be big enough that mpack doesn't overflow
+                                               mid-write */
 #define RPC_CALL_TIMEOUT_MS          3000u
-#define REG_SWEEP_MS                 5000000u
 #define RPC_TX_RETRY_MS              20u    /* bound on spin-wait for tx_rb space; several times the
                                                 worst-case drain time of a full 256B tx_rb at LPUART's
                                                 baud rate, so it only ever blocks the main loop briefly */
@@ -189,7 +191,7 @@ static const rpc_method_t *find_method(mpack_node_t method) {
     return NULL;
 }
 static void send_response(uint32_t msgid, rpc_handler_fn handler, mpack_node_t params) {
-    uint8_t buf[128];
+    uint8_t buf[RPC_TX_BUF];
     mpack_writer_t w;
     mpack_writer_init(&w, (char *)buf, sizeof(buf));
 
@@ -205,7 +207,7 @@ static void send_response(uint32_t msgid, rpc_handler_fn handler, mpack_node_t p
 }
 
 static void dispatch_no_reply(rpc_handler_fn handler, mpack_node_t params) {
-    uint8_t scratch[64];
+    uint8_t scratch[RPC_NOTIFY_SCRATCH_BUF];
     mpack_writer_t w;
     mpack_writer_init(&w, (char *)scratch, sizeof scratch);
     handler(params, &w);        // writes error+result into the void
@@ -215,8 +217,6 @@ static void dispatch_no_reply(rpc_handler_fn handler, mpack_node_t params) {
 /*Registration*/
 static size_t reg_idx = 0;
 static bool reg_inflight = false;
-static uint32_t last_sweep_ms = 0;
-static uint32_t last_activity_ms = 0;
 
 static void write_register_params(mpack_writer_t *w, void *ctx) {
     const rpc_method_t *m = (const rpc_method_t *)ctx;
@@ -250,7 +250,6 @@ static void registration_tick(uint32_t now) {
     if (rpc_call("$/register", write_register_params, (void *)m, on_register_result, NULL)) {
         reg_inflight = true;
         reg_led_on();
-        last_sweep_ms = now;
     }
 }
 
@@ -259,8 +258,6 @@ static void handle_request(mpack_node_t msgid_n, mpack_node_t method_n, mpack_no
     if (mpack_node_type(method_n) != mpack_type_str) return;
     uint32_t msgid = mpack_node_u32(msgid_n);
     if (mpack_tree_error(&rx_tree) != mpack_ok) return;
-
-    last_activity_ms = rpc_now_ms();
 
     const rpc_method_t *m = find_method(method_n);
     if (m == NULL) return;
@@ -271,7 +268,6 @@ static void handle_notification(mpack_node_t method_n, mpack_node_t params_n) {
     if (mpack_node_type(method_n) != mpack_type_str) return;
     if (mpack_tree_error(&rx_tree) != mpack_ok) return;
 
-    last_activity_ms = rpc_now_ms();
     const rpc_method_t *m = find_method(method_n);
     if (m == NULL) return;
     dispatch_no_reply(m->handler, params_n);

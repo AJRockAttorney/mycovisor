@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit-tests:
+    name: Ring buffer unit tests (native)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and run
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -ICore/Inc \
+            -o test_ring_buff tests/test_ring_buff.c Core/Src/ring_buff.c
+          ./test_ring_buff
+
+  firmware:
+    name: Firmware build (STM32U5, arm-none-eabi)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM GNU toolchain
+        uses: carlosperate/arm-none-eabi-gcc-action@v1
+        with:
+          release: "13.2.Rel1"
+
+      - name: Install Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Configure
+        run: cmake --preset Debug
+
+      - name: Build
+        run: cmake --build --preset Debug

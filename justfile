@@ -14,6 +14,11 @@ ensure-server:
 build:
     cmake --build build/Debug
 
+# native host-side unit tests (no ARM toolchain/target needed)
+test:
+    cc -std=c11 -Wall -Wextra -ICore/Inc -o build/test_ring_buff tests/test_ring_buff.c Core/Src/ring_buff.c
+    ./build/test_ring_buff
+
 # the common case: build + flash + run free, one shot
 flash: build ensure-forwards ensure-server
     {{gdb}} -nx --batch \
