@@ -40,7 +40,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/ring_buff.c
         Core/Inc/ring_buff.h
         Core/Inc/mpack-config.h
-        Core/Src/mpack.c
+        Lib/mpack/mpack.c
+        Lib/mpack/mpack.h
         Core/Src/rpc.c
         Core/Inc/rpc.h
         Core/Src/fault.c
@@ -61,7 +62,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
+    Lib/mpack
 )
 
 # Add project symbols (macros)
