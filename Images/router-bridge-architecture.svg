@@ -45,20 +45,20 @@
 
   <rect class="box-gray" x="84" y="78" width="200" height="44" rx="8"/>
   <text class="th t-primary" x="184" y="94" text-anchor="middle" dominant-baseline="central">Linux clients</text>
-  <text class="ts t-sub" x="184" y="110" text-anchor="middle" dominant-baseline="central">Python · C++ · custom apps</text>
+  <text class="ts t-sub" x="184" y="110" text-anchor="middle" dominant-baseline="central">Python · custom apps</text>
 
   <rect class="box-teal" x="320" y="78" width="276" height="44" rx="8"/>
   <text class="th t-teal" x="458" y="94" text-anchor="middle" dominant-baseline="central">arduino-router</text>
   <text class="ts t-teal-sub" x="458" y="110" text-anchor="middle" dominant-baseline="central">broker · msgid remap + forwarding</text>
 
-  <line x1="284" y1="100" x2="318" y2="100" class="arr" marker-end="url(#arrow)"/>
+  <line x1="284" y1="100" x2="318" y2="100" class="arr"  marker-end="url(#arrow)"/>
 
-  <line x1="340" y1="136" x2="340" y2="198" class="arr" marker-end="url(#arrow)"/>
+  <line x1="340" y1="136" x2="340" y2="198" class="arr" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
   <text class="ts t-sub" x="356" y="150" text-anchor="start">internal UART (ttyHS1 ⇄ Serial1)</text>
   <text class="ts t-sub" x="356" y="166" text-anchor="start">MessagePack-RPC · byte stream</text>
 
-  <line class="divider" x1="60" y1="180" x2="620" y2="180"/>
-  <line class="divider" x1="60" y1="186" x2="620" y2="186"/>
+  <line class="divider" x1="60" y1="175" x2="620" y2="175"/>
+  <line class="divider" x1="60" y1="181" x2="620" y2="181"/>
 
   <rect class="container" x="60" y="200" width="560" height="300" rx="16"/>
   <text class="th t-primary" x="84" y="222">MCU — STM32U585 · bare-metal C stack</text>
