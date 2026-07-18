@@ -59,11 +59,11 @@ void lpuart_rx_check(void) {
     size_t pos;
 
     pos=sizeof(lpuart_rx_dma_buf) - LL_DMA_GetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_3);
-    if (pos != old_pos) { //Is data received
-        if (pos>old_pos) { //Check if index has wrapped in ring buffer
+    if (pos != old_pos) {
+        if (pos>old_pos) {
             if (rx_handler) rx_handler(&lpuart_rx_dma_buf[old_pos], pos-old_pos);
         }
-        else { //Process in overflow mode. Need to read data twice to access both pieces
+        else {
             if (rx_handler) rx_handler(&lpuart_rx_dma_buf[old_pos], sizeof(lpuart_rx_dma_buf)-old_pos);
             if (pos > 0) {
                 if (rx_handler) rx_handler(&lpuart_rx_dma_buf[0],pos);

@@ -3,3 +3,5 @@ cmake-build-*/
 *.o
 *.elf
 *.map
+SOAK_DEBUG_LOG.md
+MPACK_TOO_BIG_ROOT_CAUSE.md

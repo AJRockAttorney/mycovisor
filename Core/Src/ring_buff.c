@@ -20,17 +20,14 @@ bool rb_write(ring_buf_t *rb, const uint8_t *data, const size_t len) {
      size_t capacity = 0;
      size_t to_end = size - head;
 
-     /*Check current count of bytes to send*/
      if (head>=tail) {
           current_count = head-tail;
      }
-     else {// Handle data wrapping condition
+     else {
           current_count = (size-tail) + head;
      }
-     /*Calculate current buffer capacity*/
      capacity = (size - 1) - current_count;
 
-     /*If there is not enough capacity return false*/
      if (capacity<len) {
           return false;
      }
@@ -81,7 +78,7 @@ rb_block_t rb_get_linear_block(ring_buf_t *rb) {
      rb_block_t block = {0};
 
      block.ptr = &rb->buf[tail];
-     if (head>=tail) { //Not wrapped so whole block is available in one contiguous block
+     if (head>=tail) {
           block.len = head-tail;
      }
      else {
