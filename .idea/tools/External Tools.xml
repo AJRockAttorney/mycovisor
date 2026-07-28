@@ -1,0 +1,9 @@
+<toolSet name="External Tools">
+  <tool name="Ensure Uno Q debug link" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="true" synchronizeAfterRun="true">
+    <exec>
+      <option name="COMMAND" value="just" />
+      <option name="PARAMETERS" value="ensure-forwards ensure-server" />
+      <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
+    </exec>
+  </tool>
+</toolSet>

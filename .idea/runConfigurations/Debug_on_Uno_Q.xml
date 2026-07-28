@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Debug on Uno Q" type="CLionRemoteRunConfiguration" factoryName="Application"
+                  REMOTE_COMMAND="target extended-remote localhost:3333&#10;monitor reset halt&#10;load&#10;monitor reset halt"
+                  SYMBOL_FILE="$PROJECT_DIR$/build/Debug/stm32u5-mpack-rpc.elf"
+                  ONLY_LOAD_SYMBOLS="false" PATH_MAPPINGS="">
+    <method v="2">
+      <option name="CMake.BuildLibsteps" enabled="true" targets="stm32u5-mpack-rpc" configName="Debug" />
+      <option name="Tool" enabled="true" actionId="Tool_External Tools_Ensure Uno Q debug link" />
+    </method>
+  </configuration>
+</component>

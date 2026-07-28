@@ -1,0 +1,30 @@
+{
+    "name": "stm32u5-mpack-rpc",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+
+    // adb + the openocd/gdb TCP forward it sets up both live on the host
+    // (host `adb forward tcp:3333 tcp:3333`). Host networking means
+    // "localhost:3333" inside the container is the same port on the host,
+    // so gdb can reach it without any USB passthrough into the container.
+    "runArgs": ["--network=host"],
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cmake-tools",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "marus25.cortex-debug"
+            ],
+            "settings": {
+                "cmake.configureOnOpen": true,
+                "cmake.generator": "Ninja"
+            }
+        }
+    },
+
+    // configure with the Debug preset so build/Debug/compile_commands.json
+    // exists for clangd as soon as the container is ready
+    "postCreateCommand": "cmake --preset Debug"
+}

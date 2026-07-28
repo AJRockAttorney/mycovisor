@@ -2,7 +2,8 @@
 
 ## Overview
 
-This project is a bare metal rpc over uart implementation for the STM32U5 series. It contains only the firmware meant to run on the STM32U5 Microcontroller
+This project is a bare metal rpc over uart implementation for the STM32U5 series. It contains only the firmware meant to run on the STM32U5 Microcontroller. 
+Chip configuration is done largely with STMCubeMX using the Low Level Drivers with one exception for the RX DMA. The STM32U5 uses linked list for GPDMA, and CubeMX only offers the configuration for this in the HAL drivers.  
 
 ## Why I built this
 

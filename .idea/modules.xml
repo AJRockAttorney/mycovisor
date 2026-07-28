@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/UnoQBlinky.iml" filepath="$PROJECT_DIR$/.idea/UnoQBlinky.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/stm32u5-mpack-rpc.iml" filepath="$PROJECT_DIR$/.idea/stm32u5-mpack-rpc.iml" />
     </modules>
   </component>
