@@ -39,6 +39,28 @@ debug: build ensure-forwards ensure-server
       -ex "continue" \
       {{elf}}
 
+# same as `flash`, but without ensure-forwards/ensure-server: for use inside
+# the dev container, where adb isn't available. Run `just ensure-forwards
+# ensure-server` on the host first (adb + the forward/server live there).
+flash-remote: build
+    {{gdb}} -nx --batch \
+      -ex "target extended-remote localhost:3333" \
+      -ex "monitor reset halt" \
+      -ex "load" \
+      -ex "monitor reset" \
+      {{elf}}
+
+# same as `debug`, but without ensure-forwards/ensure-server; see flash-remote
+debug-remote: build
+    {{gdb}} \
+      -ex "target extended-remote localhost:3333" \
+      -ex "monitor reset halt" \
+      -ex "load" \
+      -ex "break main" \
+      -ex "monitor reset halt" \
+      -ex "continue" \
+      {{elf}}
+
 # server utilities, carried over unchanged
 server:
     adb shell arduino-debug

@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "flash",
+            "type": "shell",
+            "command": "just flash-remote",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Build and flash the Uno Q over the host's adb/openocd forward. Run `just ensure-forwards ensure-server` on the host first."
+        }
+    ]
+}
