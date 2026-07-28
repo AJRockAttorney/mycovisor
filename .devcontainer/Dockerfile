@@ -27,6 +27,13 @@ RUN curl -fsSL \
 
 ENV PATH="/opt/arm-gnu-toolchain/bin:${PATH}"
 
+# arm-none-eabi-gdb is linked against libncursesw.so.5/libtinfo.so.5, which
+# bookworm no longer ships (only the .so.6 sonames). gdb only relies on a
+# narrow, stable slice of ncurses/tinfo for its CLI text UI, so symlinking
+# the .6 libraries under the .5 names it expects is sufficient.
+RUN ln -s /lib/x86_64-linux-gnu/libncursesw.so.6 /lib/x86_64-linux-gnu/libncursesw.so.5 \
+    && ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
+
 # just: not packaged in bookworm, install the prebuilt binary
 RUN curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh \
     | bash -s -- --to /usr/local/bin
