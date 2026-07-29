@@ -1,0 +1,9 @@
+CompileFlags:
+  CompilationDatabase: build/Debug
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes
+  BlockEnd: Yes

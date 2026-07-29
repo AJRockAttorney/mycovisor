@@ -10,16 +10,28 @@
     // so gdb can reach it without any USB passthrough into the container.
     "runArgs": ["--network=host"],
 
+    // runs on the HOST (not in the container) every time the container is
+    // created or started, so the adb forward + on-device openocd are up
+    // before you ever need to flash/debug. `|| true` so a not-yet-connected
+    // board doesn't block the container from starting.
+    "initializeCommand": "just ensure-forwards ensure-server || true",
+
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-vscode.cmake-tools",
                 "llvm-vs-code-extensions.vscode-clangd",
-                "marus25.cortex-debug"
+                "marus25.cortex-debug",
+                "Catppuccin.catppuccin-vsc"
             ],
             "settings": {
                 "cmake.configureOnOpen": true,
-                "cmake.generator": "Ninja"
+                "cmake.generator": "Ninja",
+                "editor.inlayHints.enabled": "on",
+                "workbench.colorTheme": "Catppuccin Mocha",
+                // in case ms-vscode.cpptools ever ends up installed too, don't
+                // let it fight clangd for squiggles/hover/go-to-def
+                "C_Cpp.intelliSenseEngine": "disabled"
             }
         }
     },

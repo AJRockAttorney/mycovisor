@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug (remote)",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/Debug/stm32u5-mpack-rpc.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "external",
+            "gdbTarget": "localhost:3333",
+            "gdbPath": "arm-none-eabi-gdb",
+            "device": "STM32U585xx",
+            "runToEntryPoint": "main",
+            "preLaunchTask": "build",
+            "preLaunchCommands": [
+                "monitor reset halt"
+            ],
+            "postLaunchCommands": [
+                "monitor reset halt"
+            ]
+        }
+    ]
+}
