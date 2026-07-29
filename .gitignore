@@ -5,3 +5,6 @@ cmake-build-*/
 *.map
 SOAK_DEBUG_LOG.md
 MPACK_TOO_BIG_ROOT_CAUSE.md
+
+# local-only notes/scratch, never pushed
+*.local.md
