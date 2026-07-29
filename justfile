@@ -1,4 +1,4 @@
-elf := "build/Debug/stm32u5-mpack-rpc.elf"
+elf := "build/Debug/mycovisor.elf"
 gdb := "arm-none-eabi-gdb"
 
 # auto-ensure the gdb forward exists (idempotent)

@@ -1,5 +1,5 @@
 {
-    "name": "stm32u5-mpack-rpc",
+    "name": "mycovisor",
     "build": {
         "dockerfile": "Dockerfile"
     },

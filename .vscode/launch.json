@@ -4,7 +4,7 @@
         {
             "name": "Cortex Debug (remote)",
             "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/Debug/stm32u5-mpack-rpc.elf",
+            "executable": "${workspaceFolder}/build/Debug/mycovisor.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "external",
