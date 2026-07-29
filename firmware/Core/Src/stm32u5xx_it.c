@@ -208,11 +208,7 @@ void GPDMA1_Channel1_IRQHandler(void)
 
   /* USER CODE END GPDMA1_Channel1_IRQn 0 */
   /* USER CODE BEGIN GPDMA1_Channel1_IRQn 1 */
-  if (LL_DMA_IsEnabledIT_TC(GPDMA1, LL_DMA_CHANNEL_1) &&
-    LL_DMA_IsActiveFlag_TC(GPDMA1, LL_DMA_CHANNEL_1)) {
-    LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_1);
-    lpuart_tx_complete();
-  }
+  lpuart_tx_dma_irq();
   /* USER CODE END GPDMA1_Channel1_IRQn 1 */
 }
 
@@ -225,18 +221,7 @@ void GPDMA1_Channel3_IRQHandler(void)
 
   /* USER CODE END GPDMA1_Channel3_IRQn 0 */
   /* USER CODE BEGIN GPDMA1_Channel3_IRQn 1 */
-  if (LL_DMA_IsEnabledIT_HT(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_HT(GPDMA1, LL_DMA_CHANNEL_3)) {
-    LL_DMA_ClearFlag_HT(GPDMA1, LL_DMA_CHANNEL_3);
-    lpuart_rx_check();
-  }
-  if (LL_DMA_IsEnabledIT_TC(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_TC(GPDMA1, LL_DMA_CHANNEL_3)) {
-    LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_3);
-    lpuart_rx_check();
-  }
-  if (LL_DMA_IsEnabledIT_DTE(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3)) {
-    lpuart_rx_dma_error_check();
-  }
-
+  lpuart_rx_dma_irq();
   /* USER CODE END GPDMA1_Channel3_IRQn 1 */
 }
 
@@ -249,11 +234,7 @@ void LPUART1_IRQHandler(void)
 
   /* USER CODE END LPUART1_IRQn 0 */
   /* USER CODE BEGIN LPUART1_IRQn 1 */
-  if (LL_LPUART_IsActiveFlag_IDLE(LPUART1)) {
-    LL_LPUART_ClearFlag_IDLE(LPUART1);
-    lpuart_rx_check();
-  }
-  lpuart_rx_error_check();
+  lpuart_uart_irq();
   /* USER CODE END LPUART1_IRQn 1 */
 }
 

@@ -28,7 +28,7 @@ volatile uint32_t rx_fe_count;    /* framing error: stop bit not where expected 
 volatile uint32_t rx_ne_count;    /* noise error: line noise detected during a bit sample */
 volatile uint32_t rx_dma_err_count; /* GPDMA1 channel 3 data-transfer error */
 
-void lpuart_rx_error_check(void) {
+static void lpuart_rx_error_check(void) {
     if (LL_LPUART_IsActiveFlag_ORE(LPUART1)) {
         LL_LPUART_ClearFlag_ORE(LPUART1);
         rx_ore_count++;
@@ -43,7 +43,7 @@ void lpuart_rx_error_check(void) {
     }
 }
 
-void lpuart_rx_dma_error_check(void) {
+static void lpuart_rx_dma_error_check(void) {
     if (LL_DMA_IsActiveFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3)) {
         LL_DMA_ClearFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3);
         rx_dma_err_count++;
@@ -54,7 +54,7 @@ void lpuart_set_rx_handler(lpuart_rx_handler_t handler) {
     rx_handler = handler;
 }
 
-void lpuart_rx_check(void) {
+static void lpuart_rx_check(void) {
     static size_t old_pos;
     size_t pos;
 
@@ -228,10 +228,40 @@ bool lpuart_write(const uint8_t *data, size_t len) {
     return ok;
 }
 
-void lpuart_tx_complete(void) {
+static void lpuart_tx_complete(void) {
     rb_skip(&tx_rb, tx_dma_len);
     tx_dma_len=0;
     lpuart_start_tx();
+}
+
+void lpuart_tx_dma_irq(void) {
+    if (LL_DMA_IsEnabledIT_TC(GPDMA1, LL_DMA_CHANNEL_1) &&
+        LL_DMA_IsActiveFlag_TC(GPDMA1, LL_DMA_CHANNEL_1)) {
+        LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_1);
+        lpuart_tx_complete();
+    }
+}
+
+void lpuart_rx_dma_irq(void) {
+    if (LL_DMA_IsEnabledIT_HT(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_HT(GPDMA1, LL_DMA_CHANNEL_3)) {
+        LL_DMA_ClearFlag_HT(GPDMA1, LL_DMA_CHANNEL_3);
+        lpuart_rx_check();
+    }
+    if (LL_DMA_IsEnabledIT_TC(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_TC(GPDMA1, LL_DMA_CHANNEL_3)) {
+        LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_3);
+        lpuart_rx_check();
+    }
+    if (LL_DMA_IsEnabledIT_DTE(GPDMA1, LL_DMA_CHANNEL_3) && LL_DMA_IsActiveFlag_DTE(GPDMA1, LL_DMA_CHANNEL_3)) {
+        lpuart_rx_dma_error_check();
+    }
+}
+
+void lpuart_uart_irq(void) {
+    if (LL_LPUART_IsActiveFlag_IDLE(LPUART1)) {
+        LL_LPUART_ClearFlag_IDLE(LPUART1);
+        lpuart_rx_check();
+    }
+    lpuart_rx_error_check();
 }
 
 void lpuart_init(void) {
