@@ -33,19 +33,19 @@ enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-        Core/Src/app.c
-        Core/Inc/app.h
-        Core/Inc/lpuart.h
-        Core/Src/lpuart.c
-        Core/Src/ring_buff.c
-        Core/Inc/ring_buff.h
-        Core/Inc/mpack-config.h
+        App/Src/app.c
+        App/Inc/app.h
+        App/Inc/lpuart.h
+        App/Src/lpuart.c
+        App/Src/ring_buff.c
+        App/Inc/ring_buff.h
+        App/Inc/mpack-config.h
         Lib/mpack/mpack.c
         Lib/mpack/mpack.h
-        Core/Src/rpc.c
-        Core/Inc/rpc.h
-        Core/Src/fault.c
-        Core/Inc/fault.h)
+        App/Src/rpc.c
+        App/Inc/rpc.h
+        App/Src/fault.c
+        App/Inc/fault.h)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
@@ -63,6 +63,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     Lib/mpack
+    App/Inc
 )
 
 # Add project symbols (macros)

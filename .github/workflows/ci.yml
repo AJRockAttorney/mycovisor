@@ -16,8 +16,8 @@ jobs:
 
       - name: Build and run
         run: |
-          cc -std=c11 -Wall -Wextra -Werror -ICore/Inc \
-            -o test_ring_buff tests/test_ring_buff.c Core/Src/ring_buff.c
+          cc -std=c11 -Wall -Wextra -Werror -IApp/Inc \
+            -o test_ring_buff tests/test_ring_buff.c App/Src/ring_buff.c
           ./test_ring_buff
 
   firmware:
@@ -44,7 +44,7 @@ jobs:
         run: cmake --build --preset Debug
 
   static-analysis:
-    name: cppcheck (Core/Src)
+    name: cppcheck (App/Src)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -58,7 +58,7 @@ jobs:
       - name: Run cppcheck
         run: |
           cppcheck --enable=warning,performance,portability --error-exitcode=1 \
-            --inline-suppr --std=c11 -ICore/Inc -DMPACK_HAS_CONFIG=1 \
+            --inline-suppr --std=c11 -IApp/Inc -DMPACK_HAS_CONFIG=1 \
             --suppress=missingIncludeSystem \
-            Core/Src/app.c Core/Src/lpuart.c Core/Src/ring_buff.c Core/Src/rpc.c \
-            Core/Src/fault.c
+            App/Src/app.c App/Src/lpuart.c App/Src/ring_buff.c App/Src/rpc.c \
+            App/Src/fault.c
