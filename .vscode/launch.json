@@ -3,8 +3,8 @@
     "configurations": [
         {
             "name": "Cortex Debug (remote)",
-            "cwd": "${workspaceFolder}",
-            "executable": "${workspaceFolder}/build/Debug/mycovisor.elf",
+            "cwd": "${workspaceFolder}/firmware",
+            "executable": "${workspaceFolder}/firmware/build/Debug/mycovisor.elf",
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "external",

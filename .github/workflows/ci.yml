@@ -8,6 +8,9 @@ jobs:
   unit-tests:
     name: Ring buffer unit tests (native)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firmware
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +23,9 @@ jobs:
   firmware:
     name: Firmware build (STM32U5, arm-none-eabi)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firmware
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +46,9 @@ jobs:
   static-analysis:
     name: cppcheck (Core/Src)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firmware
     steps:
       - uses: actions/checkout@v4
 

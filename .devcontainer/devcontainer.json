@@ -14,7 +14,7 @@
     // created or started, so the adb forward + on-device openocd are up
     // before you ever need to flash/debug. `|| true` so a not-yet-connected
     // board doesn't block the container from starting.
-    "initializeCommand": "just ensure-forwards ensure-server || true",
+    "initializeCommand": "cd firmware && just ensure-forwards ensure-server || true",
 
     "customizations": {
         "vscode": {
@@ -25,6 +25,7 @@
                 "Catppuccin.catppuccin-vsc"
             ],
             "settings": {
+                "cmake.sourceDirectory": "${workspaceFolder}/firmware",
                 "cmake.configureOnOpen": true,
                 "cmake.generator": "Ninja",
                 "editor.inlayHints.enabled": "on",
@@ -36,7 +37,7 @@
         }
     },
 
-    // configure with the Debug preset so build/Debug/compile_commands.json
+    // configure with the Debug preset so firmware/build/Debug/compile_commands.json
     // exists for clangd as soon as the container is ready
-    "postCreateCommand": "cmake --preset Debug"
+    "postCreateCommand": "cd firmware && cmake --preset Debug"
 }

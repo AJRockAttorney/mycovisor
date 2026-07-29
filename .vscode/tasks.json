@@ -5,6 +5,9 @@
             "label": "build",
             "type": "shell",
             "command": "just build",
+            "options": {
+                "cwd": "${workspaceFolder}/firmware"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -15,6 +18,9 @@
             "label": "flash",
             "type": "shell",
             "command": "just flash-remote",
+            "options": {
+                "cwd": "${workspaceFolder}/firmware"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
